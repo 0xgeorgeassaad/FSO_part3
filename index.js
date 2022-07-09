@@ -94,11 +94,19 @@ app.post('/api/persons', (request, response, next) => {
     const person = new Person({
       ...body
     })
-  
-    person.save().then(savedPerson => {
-      response.json(savedPerson)
+    
+    Person.find({}).then(persons => {
+      if(persons.find(person => person.name.toLowerCase() == body.name.toLowerCase())){
+        response.status(409).send({ error: 'person already in database' })
+      }else{
+        person.save().then(savedPerson => {
+          response.json(savedPerson)
+        })
+        .catch(error => next(error))
+      }
     })
-    .catch(error => next(error))
+
+
 })
 
 
