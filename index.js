@@ -51,7 +51,9 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/info', (request, response) => {
+  Person.find({}).then(persons => {
     response.send(`<div>Phonebook has info for ${persons.length} people</div> <br> <div>${(new Date())}</div> `)
+  })
 })
 
 
@@ -84,19 +86,18 @@ app.post('/api/persons', (request, response) => {
       return response.status(400).json({ 
         error: 'Either name or number is missing' 
       })
-    }else if(persons.find(person=> person.name.toLowerCase() == body.name.toLowerCase())){
+    }/*else if(persons.find(person=> person.name.toLowerCase() == body.name.toLowerCase())){
         return response.status(400).json({ 
             error: `${body.name} already in phonebook.` 
         })
-    }
-    const person = {
-      ...body,
-      id: Math.floor(Math.random() * 1000000),
-    }
+    }*/
+    const person = new Person({
+      ...body
+    })
   
-    persons = persons.concat(person)
-  
-    response.json(person)
+    person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })
 })
 
 
